@@ -10,6 +10,9 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <string.h>
+#include <stdlib.h>
+#include <assert.h>
 SmartChat::SmartChat()
 {
 }
@@ -76,4 +79,97 @@ int SmartChat::acceptClient(int server_socket)
         break;
     }
     return s;
+}
+
+void *SmartChat::chatMalloc(size_t size)
+{
+    void *ptr = malloc(size);
+    if (ptr == NULL)
+    {
+        perror("Out of memory");
+        exit(1);
+    }
+    return ptr;
+}
+
+void *SmartChat::chatRealloc(void *ptr, size_t size)
+{
+    ptr = realloc(ptr, size);
+    if (ptr == NULL)
+    {
+        perror("Out of memory");
+        exit(1);
+    }
+    return ptr;
+}
+
+client *SmartChat::createClient(int fd)
+{
+    struct client *c = (struct client *)chatMalloc(sizeof(*c));
+    socketSetNonBlockNoDelay(fd); // Pretend this will not fail.
+    c->fd = fd;
+    c->nick = NULL;
+    assert(Chat->clients[c->fd] == NULL); // This should be available.
+    Chat->clients[c->fd] = c;
+    /* We need to update the max client set if needed. */
+    if (c->fd > Chat->maxclient)
+        Chat->maxclient = c->fd;
+    Chat->numclients++;
+    return c;
+}
+
+void SmartChat::freeClient(client *c)
+{
+    free(c->nick);
+    close(c->fd);
+    Chat->clients[c->fd] = NULL;
+    Chat->numclients--;
+    if (Chat->maxclient == c->fd)
+    {
+        /* Ooops, this was the max client set. Let's find what is
+         * the new highest slot used. */
+        int j;
+        for (j = Chat->maxclient - 1; j >= 0; j--)
+        {
+            if (Chat->clients[j] != NULL)
+                Chat->maxclient = j;
+            break;
+        }
+        if (j == -1)
+            Chat->maxclient = -1; // We no longer have clients.
+    }
+    free(c);
+}
+
+void SmartChat::initChat(void)
+{
+    Chat = (struct chatState *)chatMalloc(sizeof(*Chat));
+    memset(Chat, 0, sizeof(*Chat));
+    /* No clients at startup, of course. */
+    Chat->maxclient = -1;
+    Chat->numclients = 0;
+
+    /* Create our listening socket, bound to the given port. This
+     * is where our clients will connect. */
+    Chat->serversock = createTCPServer(SERVER_PORT);
+    if (Chat->serversock == -1)
+    {
+        perror("Creating listening socket");
+        exit(1);
+    }
+}
+
+void SmartChat::sendMsgToAllClientsBut(int excluded, char *s, size_t len)
+{
+    for (int j = 0; j < Chat->maxclient; j++)
+    {
+        if (Chat->clients[j] == NULL ||
+            Chat->clients[j]->fd == excluded)
+            continue;
+
+        /* Important: we don't do ANY BUFFERING. We just use the kernel
+         * socket buffers. If the content does not fit, we don't care.
+         * This is needed in order to keep this program simple. */
+        write(Chat->clients[j]->fd, s, len);
+    }
 }
