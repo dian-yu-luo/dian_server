@@ -21,6 +21,12 @@ $(OBJ_DIR):
 main: $(OBJS) main.cpp 
 	$(CXX) $(CXXFLAGS) $(INC_DIR) -o main main.cpp obj/csapp.o obj/dian_log.o obj/smart_chat.o 
 
+echoserver: $(OBJS) echoserver.cpp
+	$(CXX) $(CXXFLAGS) $(INC_DIR) -o echoserver echoserver.cpp obj/csapp.o 
+
+echoclient: $(OBJS) echoclient.cpp
+	$(CXX) $(CXXFLAGS) $(INC_DIR) -o echoclient echoclient.cpp obj/csapp.o 
+
 .PHONY: clean
 clean:
 	rm -f $(TARGET) $(OBJ_DIR)/*.o
