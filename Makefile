@@ -6,13 +6,10 @@ SRC_DIR = ./
 OBJ_DIR = ./obj
 TARGET = main
 
-SRCS = $(wildcard $(SRC_DIR)/*.cpp)
-OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
+SRCS = csapp.cpp dian_log.cpp echoserver.cpp smart_chat.cpp
+OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.cpp=.o))
 
-all: $(OBJ_DIR) $(TARGET)
-
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) $(INC_DIR) -o $@ $^ $(LIBS)
+all: $(OBJ_DIR) $(OBJS) main 
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
@@ -20,6 +17,9 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
+
+main: $(OBJS) main.cpp 
+	$(CXX) $(CXXFLAGS) $(INC_DIR) -o main main.cpp obj/csapp.o obj/dian_log.o obj/smart_chat.o 
 
 .PHONY: clean
 clean:
