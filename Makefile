@@ -30,6 +30,8 @@ adder: $(OBJS) adder.cpp
 	$(CXX) $(CXXFLAGS) $(INC_DIR) -o adder adder.cpp obj/csapp.o 
 tiny: $(OBJS) tiny.cpp
 	$(CXX) $(CXXFLAGS) $(INC_DIR) -o tiny tiny.cpp obj/csapp.o 
+select: $(OBJS) select.cpp
+	$(CXX) $(CXXFLAGS) $(INC_DIR) -o select select.cpp obj/csapp.o 
 
 .PHONY: clean
 clean:
