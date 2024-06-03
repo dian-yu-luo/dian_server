@@ -26,6 +26,10 @@ echoserver: $(OBJS) echoserver.cpp
 
 echoclient: $(OBJS) echoclient.cpp
 	$(CXX) $(CXXFLAGS) $(INC_DIR) -o echoclient echoclient.cpp obj/csapp.o 
+adder: $(OBJS) adder.cpp
+	$(CXX) $(CXXFLAGS) $(INC_DIR) -o adder adder.cpp obj/csapp.o 
+tiny: $(OBJS) tiny.cpp
+	$(CXX) $(CXXFLAGS) $(INC_DIR) -o tiny tiny.cpp obj/csapp.o 
 
 .PHONY: clean
 clean:
