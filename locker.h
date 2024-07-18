@@ -3,7 +3,11 @@
 #include <exception>
 #include <pthread.h>
 #include <semaphore.h>
-/* sem 的作用,线程池 */
+/* sem 的作用,线程池,sql 连接池*/
+/* 
+简单的来说,只有xx池会用到信号量,然后在不同的现成里面进行两个操作,如果是post,声明生产者有活了,
+如果是wait 说明可以开始工作了
+ */
 class sem
 {
   public:
@@ -37,6 +41,7 @@ class sem
   private:
     sem_t m_sem;
 };
+/* sql 连接池,线程池,日志部分,http连接部分,阻塞队列也用到了 */
 class locker
 {
   public:
@@ -67,6 +72,7 @@ class locker
   private:
     pthread_mutex_t m_mutex;
 };
+/* TODO 用法,作用在日志库中使用到了, */
 class cond
 {
   public:
