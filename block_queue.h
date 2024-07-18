@@ -2,6 +2,7 @@
 *循环数组实现的阻塞队列，m_back = (m_back + 1) % m_max_size;  
 *线程安全，每个操作前都要先加互斥锁，操作完后，再解锁
 **************************************************************/
+/* 应用:就在日志库中用过一次 */
 
 #ifndef BLOCK_QUEUE_H
 #define BLOCK_QUEUE_H
@@ -148,12 +149,12 @@ public:
     //pop时,如果当前队列没有元素,将会等待条件变量
     bool pop(T &item)
     {
-
+/*  */
         m_mutex.lock();
         while (m_size <= 0)
         {
             
-            if (!m_cond.wait(m_mutex.get()))
+            if (!m_cond.wait(m_mutex.get())) // 判断是表示是否会出现异常,如果异常,进行返回,否则,就是获得竞争,消费者就可以进行消费了
             {
                 m_mutex.unlock();
                 return false;
@@ -199,9 +200,11 @@ public:
     }
 
 private:
+/* 所有的变量都是私有的,不被外界锁看到 */
     locker m_mutex;
     cond m_cond;
-
+/* 设计一个数据结构需要考虑的内容,大小,前后 */
+// 阻塞队列储存的内容是什么
     T *m_array;
     int m_size;
     int m_max_size;
