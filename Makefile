@@ -15,6 +15,9 @@ server: $(OBJS)
 test_block_queue: test/test_block_queue.cpp
 	$(CXX) $(CXXFLAGS) -o test_block_queue $^
 
+test_log: test/test_log.cpp log.o
+	$(CXX) $(CXXFLAGS) -o test_log $^
+
 -include $(DEPS)
 
 clean:
