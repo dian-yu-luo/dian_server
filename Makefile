@@ -18,6 +18,9 @@ test_block_queue: test/test_block_queue.cpp
 test_log: test/test_log.cpp log.o
 	$(CXX) $(CXXFLAGS) -o test_log $^
 
+test_sql_connection: test/test_sql_connection.cpp log.o sql_connection_pool.o 
+	$(CXX) $(CXXFLAGS) -o test_sql_connection $^ -lmysqlclient
+
 -include $(DEPS)
 
 clean:
