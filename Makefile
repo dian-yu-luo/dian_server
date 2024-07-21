@@ -21,6 +21,9 @@ test_log: test/test_log.cpp log.o
 test_sql_connection: test/test_sql_connection.cpp log.o sql_connection_pool.o 
 	$(CXX) $(CXXFLAGS) -o test_sql_connection $^ -lmysqlclient
 
+test_http_conn: test/test_http_conn.cpp log.o sql_connection_pool.o http_conn.o
+	$(CXX) $(CXXFLAGS) -o test_http_conn $^ -lmysqlclient
+
 -include $(DEPS)
 
 clean:
